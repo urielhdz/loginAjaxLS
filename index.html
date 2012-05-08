@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="es">
+	<head>	
+		<title>Log In HTML5</title>
+		<meta charset="utf-8"/>
+		<link href='http://fonts.googleapis.com/css?family=Orbitron:400,500' rel='stylesheet'>
+		<style>
+			body
+			{
+				font-family: 'Orbitron', sans-serif;
+				background-color:#333;
+			}
+			h1
+			{
+				color:rgb(174,9,26);
+				text-shadow:2px 2px 2px rgb(214,49,66), 4px 4px 2px rgb(224,59,76),6px 6px 2px rgb(234,69,86), 8px 8px 2px rgb(244,69,86);
+			}
+			label
+			{
+				display: block;
+				font-size:18px;
+				font-weight:bold;
+			}
+			#contenido
+			{
+				width:600px;
+				margin:0 auto;
+				background-color:#FFF;
+				padding:20px;
+				border-radius:10px;
+			}
+			input
+			{
+				font-family: 'Orbitron', sans-serif;
+				font-size:20px;
+				padding:5px;
+				border-radius:5px;
+				outline:none;
+				color:rgb(204,39,66);
+			}
+			input[type='submit']
+			{
+				font-size:16px;
+				border-radius:0px;
+				margin:5px;
+				border:none;
+				color: #FFF;
+				padding:10px;
+				font-family: 'Orbitron', sans-serif;
+				display: block;
+				background-color:rgb(184,19,36);
+				box-shadow:2px 2px 10px rgba(0,0,0,0.5);
+				cursor:pointer;
+			}
+			button
+			{
+				font-size:16px;
+				border-radius:0px;
+				margin:5px;
+				border:none;
+				color: #FFF;
+				padding:10px;
+				font-family: 'Orbitron', sans-serif;
+				display: block;
+				background-color:rgb(184,19,36);
+				box-shadow:2px 2px 10px rgba(0,0,0,0.5);
+				cursor:pointer;	
+			}
+			#answ
+			{
+				background-color:rgb(184,19,36);
+				color:#FFF;
+				padding:5px;
+			}
+			span
+			{
+				font-weight:bolder;
+			}
+		</style>
+		<script src='http://code.jquery.com/jquery-1.7.2.min.js'></script>
+		<script>
+			$(document).on("ready",setApp);
+			function setApp()
+			{
+				if(localStorage.getItem("idUserTuTeam"))
+				{
+					loadAnswer();
+				}
+				else
+				{
+					loadForm();
+				}
+				
+			}
+			function sendData()
+			{
+				var name = $("#name").val();
+				var pswd = $("#pswd").val();
+
+				$.ajax({
+					data: "name="+name+"&pswd="+pswd,
+					type: 'POST',
+					dataType: 'json',
+					url: 'check.php',
+					success: function(data){
+						saveStorage(data);
+					}
+				});
+			}
+			function saveStorage(data)
+			{
+				if(data == "error")
+				{
+					$("#answ").text("Hubo un error con el usuario y la contraseña");
+				}
+				else
+				{
+					if(localStorage)
+					{
+						localStorage.setItem("idUserTuTeam",data["id"]);
+						loadAnswer();						
+					}
+					else
+					{
+						alert("Necesitas un navegador moderno para usar este logIn");
+					}
+				}
+			}
+			function logOut()
+			{
+				localStorage.removeItem("idUserTuTeam");
+				loadForm();				
+			}
+			function loadForm()
+			{
+				$("#contenido").load("formulario.html",function(){
+					$("#miForm").on("submit",function(e){
+						e.preventDefault();
+						sendData();
+						$("#answ").text("Cargando...")
+					});
+				});
+			}
+			function loadAnswer()
+			{
+				$("#contenido").load("respuesta.html",function(){
+					$("#logOut").on("click",logOut);
+				});
+				
+			}
+		</script>
+	</head>
+	<body>
+		<div id='contenido'>
+			
+		</div>
+	</body>
+</html>
